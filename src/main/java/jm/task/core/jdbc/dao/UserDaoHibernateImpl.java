@@ -39,22 +39,24 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-       smartMethod(session -> session.createNativeQuery("CREATE TABLE IF NOT EXISTS users" +
-               " (id BIGSERIAL not null , name VARCHAR(50), " +
-               "lastname VARCHAR(50), " +
-               "age SMALLINT NOT NULL)")
+       smartMethod(session -> session.createNativeQuery("CREATE TABLE IF NOT EXISTS Users ("
+                       + "id BIGINT(11) NOT NULL AUTO_INCREMENT, "
+                       + "name VARCHAR(20), "
+                       + "last_name VARCHAR(20), "
+                       + "age TINYINT, "
+                       + "PRIMARY KEY (id));")
                .executeUpdate());
     }
 
 
     @Override
     public void dropUsersTable() {
-        smartMethod(session -> session.createNativeQuery("DROP TABLE IF EXISTS users").executeUpdate());
+        smartMethod(session -> session.createNativeQuery("DROP TABLE IF EXISTS Users").executeUpdate());
     }
 
     @Override
-    public void saveUser(String name, String lastName, byte age) {
-        smartMethod(session -> session.save(new User(name, lastName, age)));
+    public void saveUser(String name, String last_name, byte age) {
+        smartMethod(session -> session.save(new User(name, last_name, age)));
     }
 
     @Override

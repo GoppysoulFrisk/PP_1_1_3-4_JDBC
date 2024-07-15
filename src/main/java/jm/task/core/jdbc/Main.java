@@ -2,6 +2,7 @@ package jm.task.core.jdbc;
 
 import jdk.management.jfr.ConfigurationInfo;
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -14,9 +15,8 @@ import java.sql.Driver;
 public class Main {
     public static void main(String[] args) {
         // реализуйте алгоритм здесь
-        Configuration config = new Configuration();
-        config.configure("hibernate.cfg.xml");
-        try (SessionFactory session = config.buildSessionFactory(); Session session2 = session.openSession()) {
-        }
+        UserService userService = new UserServiceImpl();
+        userService.createUsersTable();
+        userService.saveUser("fjkdjfkdf", "jskdjskd", (byte) 67);
     }
 }

@@ -13,9 +13,10 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
 
-    private final SessionFactory sessionFactory = Util.getSessionFactory();
+    private final SessionFactory sessionFactory;
 
     public UserDaoHibernateImpl() {
+        this.sessionFactory = Util.getSessionFactory();
     }
 
     @FunctionalInterface
@@ -29,13 +30,24 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction = session.beginTransaction();
             smartInterface.execute(session);
             transaction.commit();
-        } catch (HibernateException e) {
+        } catch (HibernateException e) {тэ
             e.printStackTrace();
             if (transaction != null) {
                 transaction.rollback();
             }
         }
     }
+
+    public void closeSession() {
+        if (this.sessionFactory != null) {
+            try {
+                this.sessionFactory.close();
+            } catch (HibernateException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     @Override
     public void createUsersTable() {

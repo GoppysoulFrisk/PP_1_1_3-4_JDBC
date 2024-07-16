@@ -14,6 +14,7 @@ public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
     }
 
+    @Override
     public void createUsersTable() {
         try (Statement createTable = connection.createStatement()) {
             createTable.executeUpdate("CREATE TABLE IF NOT EXISTS Users ("
@@ -27,6 +28,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void dropUsersTable() {
         try (Statement dropTable = connection.createStatement()) {
             dropTable.executeUpdate("DROP TABLE IF EXISTS User;");
@@ -35,6 +37,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void saveUser(String name, String last_name, byte age) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "INSERT INTO Users (name, last_name, age) VALUES (?, ?, ?);")) {
@@ -52,6 +55,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public void removeUserById(long id) {
         try (PreparedStatement remove = connection.prepareStatement(
                 "DELETE FROM Users WHERE id = ?;")) {
@@ -64,6 +68,7 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
         try (Statement geter = connection.createStatement()) {
@@ -86,6 +91,7 @@ public class UserDaoJDBCImpl implements UserDao {
         return userList;
     }
 
+    @Override
     public void cleanUsersTable() {
         try (Statement clean = connection.createStatement()) {
             clean.executeUpdate("DELETE FROM Users;");

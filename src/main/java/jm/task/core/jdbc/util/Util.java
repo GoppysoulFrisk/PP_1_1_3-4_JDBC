@@ -13,6 +13,7 @@ import java.sql.SQLException;
 
 public final class Util {
     // реализуйте настройку соеденения с БД
+    private Util() {}
 
     private static SessionFactory sessionFactory;
 

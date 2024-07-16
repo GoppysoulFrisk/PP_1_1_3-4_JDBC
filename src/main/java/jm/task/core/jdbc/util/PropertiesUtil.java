@@ -6,6 +6,8 @@ import java.util.Properties;
 public final class PropertiesUtil {
     private static final Properties PROPERTIES = new Properties();
 
+    private PropertiesUtil() {}
+
     static {
         loadProperties();
     }
@@ -20,8 +22,5 @@ public final class PropertiesUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private PropertiesUtil(){
     }
 }

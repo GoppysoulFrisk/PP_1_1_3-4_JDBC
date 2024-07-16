@@ -11,6 +11,8 @@ public final class Util {
     private static final String PASSWORD = "root";
     private static final String USER = "root";
 
+    private Util() {}
+
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -18,5 +20,4 @@ public final class Util {
             throw new RuntimeException(e);
         }
     }
-
 }

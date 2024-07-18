@@ -15,6 +15,7 @@ public final class Util {
     // реализуйте настройку соеденения с БД
     private Util() {}
 
+    private static Connection connection;
     private static SessionFactory sessionFactory;
 
     private static final String URL_KEY = "db.url";
@@ -23,13 +24,22 @@ public final class Util {
 
     public static Connection getConnection() {
         try {
-            return DriverManager.getConnection(
+            connection = DriverManager.getConnection(
                     PropertiesUtil.getProperty(URL_KEY),
                     PropertiesUtil.getProperty(USER_KEY),
-                    PropertiesUtil.getProperty(PASSWORD_KEY)
-            );
+                    PropertiesUtil.getProperty(PASSWORD_KEY));
+            return connection;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public static void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -50,4 +60,10 @@ public final class Util {
         }
         return sessionFactory;
     }
+    public static void closeSessionFactory() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
+    }
+
 }

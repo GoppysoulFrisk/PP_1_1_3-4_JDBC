@@ -24,7 +24,7 @@ public class UserDaoHibernateImpl implements UserDao {
         void execute(Session session);
     }
 
-    public void smartMethod(SmartInterface smartInterface) {
+    public void smartMethod(SmartInterface smartInterface, boolean rollback) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -32,22 +32,12 @@ public class UserDaoHibernateImpl implements UserDao {
             transaction.commit();
         } catch (HibernateException e) {
             e.printStackTrace();
-            if (transaction != null) {
+            if (transaction != null && rollback) {
                 transaction.rollback();
             }
+            sessionFactory.close();
         }
     }
-
-    public void closeSession() {
-        if (this.sessionFactory != null) {
-            try {
-                this.sessionFactory.close();
-            } catch (HibernateException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
 
     @Override
     public void createUsersTable() {
@@ -57,23 +47,32 @@ public class UserDaoHibernateImpl implements UserDao {
                        + "last_name VARCHAR(20), "
                        + "age TINYINT, "
                        + "PRIMARY KEY (id));")
-               .executeUpdate());
+               .executeUpdate(), false);
     }
 
 
     @Override
     public void dropUsersTable() {
-        smartMethod(session -> session.createNativeQuery("DROP TABLE IF EXISTS Users").executeUpdate());
+        smartMethod(session -> session.createNativeQuery("DROP TABLE IF EXISTS Users").executeUpdate(), false);
     }
 
     @Override
     public void saveUser(String name, String last_name, byte age) {
-        smartMethod(session -> session.save(new User(name, last_name, age)));
+        smartMethod(session -> {
+            session.save(new User(name, last_name, age));
+            System.out.println("User с именем — " + name + " " + last_name + " добавлен в базу данных");
+        }, true);
     }
 
     @Override
     public void removeUserById(long id) {
-        smartMethod(session -> session.delete(session.get(User.class, id)));
+        smartMethod(session -> {
+            if (session.get(User.class, id) != null) {
+                session.delete(session.get(User.class, id));
+            } else {
+                System.out.println("Такого пользователя не было, я не удалил");
+            }
+        }, true);
     }
 
     @Override
@@ -83,12 +82,12 @@ public class UserDaoHibernateImpl implements UserDao {
             CriteriaQuery<User> criteriaQuery = session.getCriteriaBuilder().createQuery(User.class);
             criteriaQuery.from(User.class);
             users.addAll(session.createQuery(criteriaQuery).getResultList());
-        });
+        }, false);
         return users;
     }
 
     @Override
     public void cleanUsersTable() {
-        smartMethod(session -> session.createNativeQuery("TRUNCATE TABLE users;").executeUpdate());
+        smartMethod(session -> session.createNativeQuery("TRUNCATE TABLE users;").executeUpdate(), true);
     }
 }

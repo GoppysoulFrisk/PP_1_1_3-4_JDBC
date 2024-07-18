@@ -4,21 +4,16 @@ import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 
 import jm.task.core.jdbc.model.User;
-import org.hibernate.HibernateException;
 
 
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
 
-    private UserDaoHibernateImpl userDao;
+    private UserDao userDao;
 
     public UserServiceImpl() {
         this.userDao = new UserDaoHibernateImpl();
-    }
-
-    public void closeSession() {
-        userDao.closeSession();
     }
 
     @Override

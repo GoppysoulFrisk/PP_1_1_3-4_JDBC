@@ -48,16 +48,6 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void closeConnection() {
-        if (this.connection != null) {
-            try {
-                this.connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     @Override
     public void createUsersTable() {
         try (Statement createTable = connection.createStatement()) {
@@ -95,6 +85,7 @@ public class UserDaoJDBCImpl implements UserDao {
             if (count > 0) {
                 System.out.println("Пользователь с именем " + name + " " + last_name + " добавлен в базу данных");
             }
+            insert.close();
         });
     }
 
@@ -102,9 +93,17 @@ public class UserDaoJDBCImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         smartMethod(connection -> {
-            PreparedStatement remove = connection.prepareStatement("DELETE FROM Users WHERE id = ?;");
-            remove.setLong(1, id);
-            remove.executeUpdate();
+            PreparedStatement check = connection.prepareStatement("SELECT * FROM Users WHERE id = ?;");
+            check.setLong(1, id);
+            if (check.executeQuery().next()) {
+                PreparedStatement remove = connection.prepareStatement("DELETE FROM Users WHERE id = ?;");
+                remove.setLong(1, id);
+                remove.executeUpdate();
+                remove.close();
+            } else {
+                throw new RuntimeException("Пользователь с ID " + id + " не найден.");
+            }
+            check.close();
         });
     }
 
